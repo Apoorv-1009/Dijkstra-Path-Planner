@@ -106,8 +106,8 @@ cv2.fillPoly(canvas, [vertices], (0, 0, 0))
 # Enter the start and goal nodes with bottom left as origin
 # Take input from the user, till its not in the obstacle space
 while True:
-    x_start = int(input('Enter start x position: '))
-    y_start = int(input('Enter start y position: '))
+    x_start = int(input('Enter start x position (0-1199): '))
+    y_start = int(input('Enter start y position (0-499): '))
 
     y_start = height-y_start-1
     if canvas[y_start, x_start, 0] == 255:
@@ -116,8 +116,8 @@ while True:
         print('The start node is in the obstacle space')
 
 while True:
-    x_goal = int(input('Enter goal x position: '))
-    y_goal = int(input('Enter goal y position: '))
+    x_goal = int(input('Enter goal x position (0-1199): '))
+    y_goal = int(input('Enter goal y position (0-499): '))
 
     y_goal = height-y_goal-1
     if canvas[y_goal, x_goal, 0] == 255:
