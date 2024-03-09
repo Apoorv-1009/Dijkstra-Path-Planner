@@ -100,3 +100,79 @@ vertices = np.array([[width-300, 50], [width-100, 50],
                      [width-180, 125], [width-180-120, 125]])
 vertices = vertices.reshape((-1, 1, 2))
 cv2.fillPoly(canvas, [vertices], (0, 0, 0))
+        
+########## STEP 3: GENERATE THE GRAPH AND CHECK FOR GOAL NODE IN EACH ITERATION ##########
+
+# Enter the start and goal nodes with bottom left as origin
+# Take input from the user, till its not in the obstacle space
+while True:
+    x_start = int(input('Enter start x position: '))
+    y_start = int(input('Enter start y position: '))
+
+    y_start = height-y_start-1
+    if canvas[y_start, x_start, 0] == 255:
+        break
+    else:
+        print('The start node is in the obstacle space')
+
+while True:
+    x_goal = int(input('Enter goal x position: '))
+    y_goal = int(input('Enter goal y position: '))
+
+    y_goal = height-y_goal-1
+    if canvas[y_goal, x_goal, 0] == 255:
+        break
+    else:
+        print('The goal node is in the obstacle space')
+
+print("Positions accepted! Calculating path...")
+
+q = []
+heapq.heappush(q, (0, x_start, y_start))
+
+# Dictionary to store visited nodes
+visited = {(x_start, y_start): 1}
+# Dictionary to store the parent of each node
+parent = {(x_start, y_start): (x_start, y_start)}
+# Dictionary to store the cost of each node
+cost_to_come = {(x_start, y_start): 0}
+
+reached = False
+
+while q:
+
+    _, x, y = heapq.heappop(q)
+
+    if x == x_goal and y == y_goal:
+        print('Goal reached')
+        reached = True
+        break
+
+    for dx, dy, cost in action_cost_set:
+        x_new, y_new = x + dx, y + dy
+
+        # If its between the boundaries and not an obstacle
+        if 0 <= x_new < width and 0 <= y_new < height and canvas[y_new, x_new, 0] == 255:
+            
+            # If the node is not visited 
+            if (x_new, y_new) not in visited:
+                node_cost = cost_to_come[(x, y)] + cost #+ ((x_new-x_goal)**2 + (y_new-y_goal)**2)**0.5
+                heapq.heappush(q, (node_cost, x_new, y_new))
+                visited[(x_new, y_new)] = 1
+
+                # Store the parent of the node
+                parent[(x_new, y_new)] = (x, y)
+                # Store the cost of the node
+                cost_to_come[(x_new, y_new)] = node_cost
+
+            # If the node is visited and the cost to come is less than the previous cost
+            elif cost_to_come[(x_new, y_new)] > cost_to_come[(x, y)] + cost:
+                cost_to_come[(x_new, y_new)] = cost_to_come[(x, y)] + cost
+                # Store the parent of the node
+                parent[(x_new, y_new)] = (x, y)
+                
+
+if not reached:
+    print('Goal could not be reached')
+    print("Exiting...")
+    exit()
