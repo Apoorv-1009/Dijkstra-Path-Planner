@@ -187,3 +187,48 @@ while (x, y) != (x_start, y_start):
     x, y = parent[(x, y)]
 path.append((x, y))
 path.reverse()
+
+########## STEP 5: REPRESENT THE OPTIMAL PATH ##########
+
+# Draw the start and goal nodes on the canvas
+cv2.circle(canvas, (x_start, y_start), 10, (0, 255, 0), -1)
+cv2.circle(canvas, (x_goal, y_goal), 10, (0, 165, 255), -1)
+
+# Start a video writer in mp4 format
+dijkstra = cv2.VideoWriter('dijkstra.mp4', cv2.VideoWriter_fourcc(*'mp4v'), 50, (width, height))
+
+# Draw on every threshold frame
+threshold = 200
+counter = 0
+
+# Draw the visited nodes on the canvas
+for x, y in visited:
+    counter+=1
+    canvas[y, x] = [255, 0, 0]
+    if(counter == threshold):
+        cv2.imshow('Canvas', canvas)
+        dijkstra.write(canvas)
+        cv2.waitKey(1)  
+        counter = 0
+
+threshold = 5
+counter = 0
+
+# Draw the start and goal nodes on the canvas
+cv2.circle(canvas, (x_start, y_start), 10, (0, 255, 0), -1)
+cv2.circle(canvas, (x_goal, y_goal), 10, (0, 165, 255), -1)
+
+# Draw the path on the canvas
+for i in range(len(path) - 1):
+    cv2.line(canvas, path[i], path[i + 1], (0, 0, 255), 2)
+    counter+=1
+    if(counter == threshold):
+        cv2.imshow('Canvas', canvas)
+        dijkstra.write(canvas)
+        cv2.waitKey(1)  
+        counter = 0
+
+# Release VideoWriter
+dijkstra.release()
+cv2.waitKey(0)
+cv2.destroyAllWindows()
