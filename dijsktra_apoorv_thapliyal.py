@@ -176,3 +176,14 @@ if not reached:
     print('Goal could not be reached')
     print("Exiting...")
     exit()
+
+########## STEP 4: OPTIMAL PATH ##########
+    
+# Get the path from the parent dictionary
+path = []
+x, y = x_goal, y_goal   
+while (x, y) != (x_start, y_start):
+    path.append((x, y))
+    x, y = parent[(x, y)]
+path.append((x, y))
+path.reverse()
