@@ -12,35 +12,37 @@ action_cost_set = {(1, 0, 1), (-1, 0, 1), (0, 1, 1), (0,-1, 1), (1, 1, 1.4), (-1
 # Define the height and width of the canvas
 height = 500
 width = 1200
-
-# Make an empty canvas
-canvas = 255*np.ones((height, width, 3), dtype=np.uint8)
-
 clearance = 5
-
 color = (0, 255, 255)
 
+# Make an empty canvas
+canvas = np.zeros((height, width, 3), dtype=np.uint8)
+# Draw a white rectangle from (clearance, clearance) to (width-clearance, height-clearance) on the canvas for wall padding
+cv2.rectangle(canvas, (clearance, clearance), (width-clearance, height-clearance), (255, 255, 255), -1)
+
 # OBSTACLE 1
-# Define the vertices of the obstacle clearance
-vertices = np.array([[100-clearance, 0], [100-clearance, 400+clearance],
-                     [175+clearance, 400+clearance], [175+clearance, 0]])
-vertices = vertices.reshape((-1, 1, 2))
-cv2.fillPoly(canvas, [vertices], color)
-# Define the vertices of the obstacle 
-vertices = np.array([[100, 0], [100, 400], [175, 400], [175, 0]])
-vertices = vertices.reshape((-1, 1, 2))
-cv2.fillPoly(canvas, [vertices], (0, 0, 0))
+x1, x2 = 100-clearance, 175+clearance
+y1, y2 = clearance, 400+clearance
+for x in range(x1, x2):
+    for y in range(y1, y2):
+        canvas[y, x] = color
+x1, x2 = 100, 175
+y1, y2 = 0, 400
+for x in range(x1, x2):
+    for y in range(y1, y2):
+        canvas[y, x] = 0
 
 # OBSTACLE 2
-# Define the vertices of the obstacle clearance
-vertices = np.array([[275-clearance, 500], [275-clearance, 100-clearance],
-                     [350+clearance, 100-clearance], [350+clearance, 500]])
-vertices = vertices.reshape((-1, 1, 2))
-cv2.fillPoly(canvas, [vertices], color)
-# Define the vertices of the obstacle
-vertices = np.array([[275, 500], [275, 100], [350, 100], [350, 500]])
-vertices = vertices.reshape((-1, 1, 2))
-cv2.fillPoly(canvas, [vertices], (0, 0, 0))
+x1, x2 = 275-clearance, 350+clearance
+y1, y2 = 100-clearance, 500-clearance
+for x in range(x1, x2):
+    for y in range(y1, y2):
+        canvas[y, x] = color
+x1, x2 = 275, 350
+y1, y2 = 100, 500
+for x in range(x1, x2):
+    for y in range(y1, y2):
+        canvas[y, x] = 0
 
 # OBSTACLE 3
 # Define the center and side length of the hexagon with clearance
@@ -88,42 +90,68 @@ pts = pts.reshape((-1, 1, 2))
 cv2.fillConvexPoly(canvas, pts, (0, 0, 0))
 
 # OBSTACLE 4
-vertices = np.array([[width-300-clearance, 50-clearance], [width-100+clearance, 50-clearance],
-                     [width-100+clearance, 450+clearance], [width-300-clearance, 450+clearance],
-                     [width-300-clearance, 450-75-clearance], [width-300+120-clearance, 450-75-clearance],
-                     [width-180-clearance, 125+clearance], [width-180-120-clearance, 125+clearance]])
-vertices = vertices.reshape((-1, 1, 2))
-cv2.fillPoly(canvas, [vertices], color)
-vertices = np.array([[width-300, 50], [width-100, 50],
-                     [width-100, 450], [width-300, 450],
-                     [width-300, 450-75], [width-300+120, 450-75],
-                     [width-180, 125], [width-180-120, 125]])
-vertices = vertices.reshape((-1, 1, 2))
-cv2.fillPoly(canvas, [vertices], (0, 0, 0))
+x1, x2 = width-300-clearance, width-100+clearance
+y1, y2 = 50-clearance, 125+clearance
+for x in range(x1, x2):
+    for y in range(y1, y2):
+        canvas[y, x] = color
+x1, x2 = width-180-clearance, width-100+clearance
+y1, y2 = 50-clearance, height-50+clearance
+for x in range(x1, x2):
+    for y in range(y1, y2):
+        canvas[y, x] = color
+x1, x2 = width-300-clearance, width-300+120+clearance
+y1, y2 = 450-75-clearance, 450+clearance
+for x in range(x1, x2):
+    for y in range(y1, y2):
+        canvas[y, x] = color
+
+x1, x2 = width-300, width-100
+y1, y2 = 50, 125
+for x in range(x1, x2):
+    for y in range(y1, y2):
+        canvas[y, x] = 0
+x1, x2 = width-180, width-100
+y1, y2 = 50, height-50
+for x in range(x1, x2):
+    for y in range(y1, y2):
+        canvas[y, x] = 0
+x1, x2 = width-300, width-300+120
+y1, y2 = 450-75, 450
+for x in range(x1, x2):
+    for y in range(y1, y2):
+        canvas[y, x] = 0
         
 ########## STEP 3: GENERATE THE GRAPH AND CHECK FOR GOAL NODE IN EACH ITERATION ##########
 
 # Enter the start and goal nodes with bottom left as origin
 # Take input from the user, till its not in the obstacle space
 while True:
-    x_start = int(input('Enter start x position (0-1199): '))
-    y_start = int(input('Enter start y position (0-499): '))
+    x_start = int(input('Enter start x position (5-1194): '))
+    y_start = int(input('Enter start y position (5-494): '))
 
     y_start = height-y_start-1
-    if canvas[y_start, x_start, 0] == 255:
-        break
+    try:
+        if canvas[y_start, x_start, 0] == 255:
+            break
+    except:
+        print('Invalid input, re-enter the start node position')
+
     else:
-        print('The start node is in the obstacle space')
+        print('The start node is in the obstacle space, re-enter the start node position')
 
 while True:
-    x_goal = int(input('Enter goal x position (0-1199): '))
-    y_goal = int(input('Enter goal y position (0-499): '))
+    x_goal = int(input('Enter goal x position (5-1194): '))
+    y_goal = int(input('Enter goal y position (5-494): '))
 
     y_goal = height-y_goal-1
-    if canvas[y_goal, x_goal, 0] == 255:
-        break
+    try:
+        if canvas[y_goal, x_goal, 0] == 255:
+            break
+    except:
+        print('Invalid input, re-enter the goal node position')
     else:
-        print('The goal node is in the obstacle space')
+        print('The goal node is in the obstacle space, re-enter the goal node position')
 
 print("Positions accepted! Calculating path...")
 
@@ -171,7 +199,6 @@ while q:
                 # Store the parent of the node
                 parent[(x_new, y_new)] = (x, y)
                 
-
 if not reached:
     print('Goal could not be reached')
     print("Exiting...")
