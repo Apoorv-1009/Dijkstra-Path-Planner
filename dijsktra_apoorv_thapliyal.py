@@ -52,7 +52,7 @@ side_length = 150+clearance
 # Calculate the coordinates of the vertices
 vertices = []
 for i in range(6):
-    angle_deg = 60 * i
+    angle_deg = 60 * i + 30
     angle_rad = np.deg2rad(angle_deg)
     x = int(center[0] + side_length * np.cos(angle_rad))
     y = int(center[1] + side_length * np.sin(angle_rad))
@@ -74,7 +74,7 @@ side_length = 150
 # Calculate the coordinates of the vertices
 vertices = []
 for i in range(6):
-    angle_deg = 60 * i
+    angle_deg = 60 * i + 30
     angle_rad = np.deg2rad(angle_deg)
     x = int(center[0] + side_length * np.cos(angle_rad))
     y = int(center[1] + side_length * np.sin(angle_rad))
