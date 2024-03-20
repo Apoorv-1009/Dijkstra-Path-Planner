@@ -1,4 +1,5 @@
 # Path Planning using Dijkstra's Algorithm
+![dijkstra test](https://github.com/Apoorv-1009/Dijkstra-Path-Planner/assets/57452076/8a073705-1386-4b3e-96f8-0a01d01cb6e4)
 
 This code demonstrates path planning using Dijkstra's algorithm in a 2D grid environment. The algorithm finds the shortest path from a start node to a goal node while avoiding obstacles.
 
